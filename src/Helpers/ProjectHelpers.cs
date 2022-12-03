@@ -115,17 +115,17 @@ namespace MadsKristensen.AddAnyFile
 			return null;
 		}
 
-		public static ProjectItem AddFileToProject(this Project project, FileInfo file, string itemType = null)
+		public static ProjectItem AddFileToProject(this Project project, FileInfo file,string shortName, string itemType = null)
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 			if (project.IsKind(ProjectTypes.ASPNET_5, ProjectTypes.SSDT))
 			{
-				return _dte.Solution.FindProjectItem(file.FullName);
+				return _dte.Solution.FindProjectItem(shortName);
 			}
 
 			string root = project.GetRootFolder();
 
-			if (string.IsNullOrEmpty(root) || !file.FullName.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+			if (string.IsNullOrEmpty(root) || !shortName.StartsWith(root, StringComparison.OrdinalIgnoreCase))
 			{
 				return null;
 			}
@@ -143,7 +143,7 @@ namespace MadsKristensen.AddAnyFile
 				projectItems = AddFolders(project, file.DirectoryName).ProjectItems;
 			}
 
-			ProjectItem item = projectItems.AddFromTemplate(file.FullName, file.Name);
+			ProjectItem item = projectItems.AddFromTemplate(shortName, Path.GetFileName(shortName));
 			item.SetItemType(itemType);
 
 			return item;

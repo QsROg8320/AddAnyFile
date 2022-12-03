@@ -93,6 +93,7 @@
     <Compile Include="AddAnyFilePackage.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\ProjectHelpers.cs" />
+    <Compile Include="Helpers\temp.cs" />
     <Compile Include="Helpers\VsTheme.cs" />
     <Compile Include="NewItemTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

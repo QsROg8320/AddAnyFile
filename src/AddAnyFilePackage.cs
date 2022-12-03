@@ -138,7 +138,7 @@ namespace MadsKristensen.AddAnyFile
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 			FileInfo file;
-
+			
 			// If the file is being added to a solution folder, but that
 			// solution folder doesn't have a corresponding directory on
 			// disk, then write the file to the root of the solution instead.
@@ -158,7 +158,7 @@ namespace MadsKristensen.AddAnyFile
 			{
 				file = new FileInfo(Path.Combine(target.Directory, name));
 			}
-
+			string shortName = Regex.Replace(file.FullName, $"-[^.]+$", string.Empty);
 			// Make sure the directory exists before we create the file. Don't use
 			// `PackageUtilities.EnsureOutputPath()` because it can silently fail.
 			Directory.CreateDirectory(file.DirectoryName);
@@ -176,14 +176,14 @@ namespace MadsKristensen.AddAnyFile
 					project = target.Project;
 				}
 
-				int position = await WriteFileAsync(project, file.FullName);
+				int position = await WriteFileAsync(project, file.FullName, shortName);
 				if (target.ProjectItem != null && target.ProjectItem.IsKind(Constants.vsProjectItemKindVirtualFolder))
 				{
 					target.ProjectItem.ProjectItems.AddFromFile(file.FullName);
 				}
 				else
 				{
-					project.AddFileToProject(file);
+					project.AddFileToProject(file, shortName);
 				}
 
 				VsShellUtilities.OpenDocument(this, file.FullName);
@@ -208,7 +208,7 @@ namespace MadsKristensen.AddAnyFile
 			}
 		}
 
-		private static async Task<int> WriteFileAsync(Project project, string file)
+		private static async Task<int> WriteFileAsync(Project project, string file,string shortname)
 		{
 			string template = await TemplateMap.GetTemplateFilePathAsync(project, file);
 
@@ -221,19 +221,19 @@ namespace MadsKristensen.AddAnyFile
 					template = template.Remove(index, 1);
 				}
 
-				await WriteToDiskAsync(file, template);
+				await WriteToDiskAsync(file, template, shortname);
 				return index;
 			}
 
-			await WriteToDiskAsync(file, string.Empty);
+			await WriteToDiskAsync(file, string.Empty, shortname);
 
 			return 0;
 		}
 
-		private static async System.Threading.Tasks.Task WriteToDiskAsync(string file, string content)
+		private static async System.Threading.Tasks.Task WriteToDiskAsync(string file, string content,string shortName)
 		{
-			file = Regex.Replace(file, $"-[^.]+$", string.Empty);
-			using (StreamWriter writer = new StreamWriter(file, false, GetFileEncoding(file)))
+			
+			using (StreamWriter writer = new StreamWriter(shortName, false, GetFileEncoding(file)))
 			{
 				await writer.WriteAsync(content);
 			}
