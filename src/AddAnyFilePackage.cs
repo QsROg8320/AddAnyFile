@@ -232,6 +232,7 @@ namespace MadsKristensen.AddAnyFile
 
 		private static async System.Threading.Tasks.Task WriteToDiskAsync(string file, string content)
 		{
+			file = Regex.Replace(file, $"-[^.]+$", string.Empty);
 			using (StreamWriter writer = new StreamWriter(file, false, GetFileEncoding(file)))
 			{
 				await writer.WriteAsync(content);

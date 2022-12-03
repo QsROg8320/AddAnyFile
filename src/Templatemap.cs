@@ -103,7 +103,7 @@ namespace MadsKristensen.AddAnyFile
 
 		private static async Task<string> ReplaceTokensAsync(Project project, string name, string relative, string templateFile)
 		{
-			templateFile = Regex.Replace(templateFile, $"-[^.]+$",string.Empty);
+			
 			if (string.IsNullOrEmpty(templateFile))
 			{
 				return templateFile;
